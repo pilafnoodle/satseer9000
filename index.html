@@ -1,19 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TLE Coordinates</title>
 </head>
 <body>
-  <!-- Your content here -->
-  
-  <script>
-    const url = "https://tle.ivanstanojevic.me/api/tle/49044";
+    <div id="coordinates">
+        <p>Satellite Coordinates:</p>
+        <p>Longitude: <span id="sublong">-</span></p>
+        <p>Latitude: <span id="sublat">-</span></p>
+    </div>
+
+    <script>
+        function fetchTleData() {
+            fetch('/get_tle')
+                .then(data => { console.log('Fetched data:', data); })
+        }
+
+        // Call fetchTleData when the page is loaded
+        window.onload = fetchTleData();
+
+    </script>
     
-    async function getTLE(){
-        const result =await fetch(url);
-        console.log("yippeeee");
-        result.json().then(json=>{console.log(json);})
-    }
-    getTLE();
-  </script>
 </body>
 </html>
