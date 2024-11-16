@@ -6,14 +6,17 @@
     <title>TLE Coordinates</title>
 </head>
 <body>
-  <!-- Your content here -->
-
   <div id="coordinates">
     <p>Coordinates:</p>
     <p>Longitude: <span id="sublong">-</span></p>
     <p>Latitude: <span id="sublat">-</span></p>
 </div>
-  
+<div id="CanISee?">
+   <h2>Can I See it?</h2>
+   <p> <span id="cansee">Yes</span></p>
+   <p> <span id="cantsee">No</span></p>
+</div>
+<script src="script.js"></script>
   <script>
     const url = "https://tle.ivanstanojevic.me/api/tle/49044";
     var loc;
@@ -27,6 +30,7 @@
       (jsonResponse) => loc=jsonResponse.loc
       )
       console.log(loc)
+      return loc;
     }
     async function getWeather(){
       try{
@@ -44,7 +48,6 @@
                long = parseFloat(nums[1]);
                lat ++;
                long ++;
-               console.log(lat + "," + long);
                await fetch("https://api.weather.gov/points/" + lat + "," + long).then((response) => response.json()).then((jsonResponse) => weatherURL = jsonResponse.properties.forecast);
             }
             loc = oldLoc;
@@ -81,11 +84,26 @@
       }
       return false;
     }
-    getLoc();
     getWeather();
-  </script>
-      <script src="script.js"></script>
-
+    async function setsight(){
+      loc = await getLoc();
+      const uloc = loc.split(",");
+      uloc[0] = parseFloat(uloc[0]);
+      uloc[1] = parseFloat(uloc[1]);
+      console.log("hi");
+      if(canISee(nextValidTime, uloc, satLoc)){
+         console.log("hi");
+         document.getElementById("cansee").style.display="inline";
+         document.getElementById("cantsee").style.display="none";
+      }
+      else{
+         console.log("hey");
+         document.getElementById("cantsee").style.display="inline"
+         document.getElementById("cansee").style.display="none"
+      }
+   }
+   setsight();
+    </script>
   </body>
 </body>
 </html>
