@@ -7,7 +7,7 @@
   
   <script>
     const url = "https://tle.ivanstanojevic.me/api/tle/49044";
-    var loc;
+    
     async function getTLE(){
         const result =await fetch(url);
         console.log("yippeeee");
@@ -21,8 +21,8 @@
       )
       console.log(loc)
     }
-    getTLE();
     getLoc();
+    getTLE();
   </script>
 </body>
 </html>
