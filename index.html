@@ -7,13 +7,22 @@
   
   <script>
     const url = "https://tle.ivanstanojevic.me/api/tle/49044";
-    
+    var loc;
     async function getTLE(){
         const result =await fetch(url);
         console.log("yippeeee");
         result.json().then(json=>{console.log(json);})
     }
+    async function getLoc(){
+      await fetch("https://ipinfo.io/json?token=32edddcb4e3546").then(
+      (response) => response.json()
+      ).then(
+      (jsonResponse) => loc=jsonResponse.loc
+      )
+      console.log(loc)
+    }
     getTLE();
+    getLoc();
   </script>
 </body>
 </html>
