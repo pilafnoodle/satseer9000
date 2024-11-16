@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+</head>
+<body>
+  <!-- Your content here -->
+  
+  <script>
+    const url = "https://tle.ivanstanojevic.me/api/tle/49044";
+    
+    async function getTLE(){
+        const result =await fetch(url);
+        console.log("yippeeee");
+        result.json().then(json=>{console.log(json);})
+    }
+    getTLE();
+  </script>
+</body>
+</html>
