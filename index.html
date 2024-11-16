@@ -20,11 +20,6 @@
     var weatherURL;
     var nextValidTime;
     const validWeathers = ["Partly Cloudy", "Clear", "Mostly Clear"]
-    async function getTLE(){
-        const result =await fetch(url);
-        console.log("yippeeee");
-        result.json().then(json=>{console.log(json);})
-    }
     async function getLoc(){
       await fetch("https://ipinfo.io/json?token=32edddcb4e3546").then(
       (response) => response.json()
@@ -87,7 +82,6 @@
       return false;
     }
     getLoc();
-    getTLE();
     getWeather();
   </script>
       <script src="script.js"></script>
