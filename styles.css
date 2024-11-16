@@ -1,3 +1,25 @@
 #icanseeit {
     display: none;
 }
+
+
+/* 
+
+#image-container img {
+    position:absolute;
+    margin-top: 100px;
+    top: 150px;
+    left: 0;
+    width: 600px;
+    height: 600px;
+    opacity: 0;
+    transition: opacity 1s ease-in-out; 1 second cross-fade */
+
+
+
+body {
+    color: white;
+    background-color: black;
+}
+
+ 

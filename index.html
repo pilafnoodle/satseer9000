@@ -21,40 +21,84 @@
     </div>
 
     <div id="image-container">
-        <img id="background" src="" alt="Image" width="600">
+        <img id="earth1" src="" alt="Image" class="hidden" width="600">
+        <img id="earth2" src="" alt="Image" class="visible" width="600">
     </div>
-
+    
+    <script>
+        // Array of image paths
+        const earthImages = [
+            "earthimages/epic_1b_20241112003634.png",
+            "earthimages/epic_1b_20241112022436.png",
+            "earthimages/epic_1b_20241112041239.png",
+            "earthimages/epic_1b_20241112060041.png",
+            "earthimages/epic_1b_20241112074844.png",
+            "earthimages/epic_1b_20241112093646.png",
+            "earthimages/epic_1b_20241112112449.png",
+            "earthimages/epic_1b_20241112131252.png",
+            "earthimages/epic_1b_20241112150054.png",
+            "earthimages/epic_1b_20241112164856.png",
+            "earthimages/epic_1b_20241112183659.png",
+            "earthimages/epic_1b_20241112221304.jpg",
+            "earthimages/epic_1b_20241112221304.png"
+        ];
+    
+        let currentImageIndex = 0; // Track the current image
+        const totalImages = earthImages.length;
+        const earth1 = document.getElementById('earth1');
+        const earth2 = document.getElementById('earth2');
+    
+        // Set the initial image
+        earth1.src = earthImages[currentImageIndex];
+    
+        // Function to handle the crossfade effect
+        function crossfadeImages() {
+            const nextImageIndex = (currentImageIndex + 1) % totalImages; // Get next image
+            const nextImageSrc = earthImages[nextImageIndex];
+            
+            // Swap the images
+            if (earth1.classList.contains('visible')) {
+                earth1.classList.remove('visible');
+                earth1.classList.add('hidden');
+                earth2.classList.remove('hidden');
+                earth2.classList.add('visible');
+                earth2.src = nextImageSrc;
+            } else {
+                earth2.classList.remove('visible');
+                earth2.classList.add('hidden');
+                earth1.classList.remove('hidden');
+                earth1.classList.add('visible');
+                earth1.src = nextImageSrc;
+            }
+    
+            currentImageIndex = nextImageIndex; // Update the index
+        }
+    
+        // Set interval for the crossfade every 3 seconds (3000ms)
+        setInterval(crossfadeImages, 3000);
+    </script>
+    
+    <style>
+        #image-container img {
+            position: absolute;
+            margin-top: 150px;
+            width: 600px;
+            transition: opacity 1.5s ease-in-out;
+        }
+    
+        .hidden {
+            opacity: 0;
+        }
+    
+        .visible {
+            opacity: 1;
+        }
+    </style>
     <script>
 
-        earthImages = [
-        "earthimages/epic_1b_20241112003634.png",
-        "earthimages/epic_1b_20241112022436.png",
-        "earthimages/epic_1b_20241112041239.png",
-        "earthimages/epic_1b_20241112060041.png",
-        "earthimages/epic_1b_20241112074844.png",
-        "earthimages/epic_1b_20241112093646.png",
-        "earthimages/epic_1b_20241112112449.png",
-        "earthimages/epic_1b_20241112131252.png",
-        "earthimages/epic_1b_20241112150054.png",
-        "earthimages/epic_1b_20241112164856.png",
-        "earthimages/epic_1b_20241112183659.png",
-        "earthimages/epic_1b_20241112221304.jpg",
-        "earthimages/epic_1b_20241112221304.png"
-        ];
-
-        function earthSpin(){
-            console.log("y8ippeee");
-            let index=0;
-
-            setInterval(()=>{
-                index = (index + 1) % earthImages.length;
-                const image = document.getElementById('background');
-                image.src = earthImages[index];
-            },1000);
-        }
-
         document.addEventListener('DOMContentLoaded', function() {
-            earthSpin();
+            crossfadeImages();
+            console.log("trying to spin");
         });    
 </script>
 
