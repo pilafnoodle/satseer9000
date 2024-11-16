@@ -4,24 +4,14 @@
 </head>
 <body>
   <!-- Your content here -->
+  <div id="coordinates">
+    <p>Coordinates:</p>
+    <p>Longitude: <span id="sublong">-</span></p>
+    <p>Latitude: <span id="sublat">-</span></p>
+</div>
   
-  <script>
-    // Fetch the data from the API
-fetch('http://api.open-notify.org/iss-now.json')
-    .then(response => response.json())  // Convert the response to JSON
-    .then(data => {
-        // Access and log the timestamp and latitude values
-        console.log('Timestamp:', data.timestamp);
-        console.log('Latitude:', data.iss_position.latitude);
-        console.log('Longitude:', data.iss_position.longitude);
+      <script src="script.js"></script>
 
-    })
-    .catch(error => {
-        // Handle any errors that occur during the fetch
-        console.error('Error fetching data:', error);
-    });
-
-
-  </script>
+  </body>
 </body>
 </html>
