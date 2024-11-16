@@ -7,7 +7,9 @@
   
   <script>
     const url = "https://tle.ivanstanojevic.me/api/tle/49044";
-    
+    var loc;
+    var weatherURL;
+    const validWeathers = ["Partly Cloudy", "Sunny"]
     async function getTLE(){
         const result =await fetch(url);
         console.log("yippeeee");
@@ -21,8 +23,13 @@
       )
       console.log(loc)
     }
+    async function getWeather(){
+      await fetch("https://api.weather.gov/points/" + loc).then((response) => response.json()).then((jsonResponse) => weather = jsonResponse.properties.forecast)
+      await fetch(weatherURL).then
+    }
     getLoc();
     getTLE();
+    getWeather();
   </script>
 </body>
 </html>
