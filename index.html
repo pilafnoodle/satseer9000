@@ -24,7 +24,12 @@
       console.log(loc)
     }
     async function getWeather(){
-      await fetch("https://api.weather.gov/points/" + loc).then((response) => response.json()).then((jsonResponse) => weather = jsonResponse.properties.forecast)
+      try{
+         await fetch("https://api.weather.gov/points/" + loc).then((response) => response.json()).then((jsonResponse) => weather = jsonResponse.properties.forecast)
+      }
+      catch{
+         //assumes that adding one to lat and long will make a valid location for the NWS api
+      }
       await fetch(weatherURL).then
     }
     getLoc();
