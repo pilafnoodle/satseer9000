@@ -30,7 +30,21 @@
       catch{
          //assumes that adding one to lat and long will make a valid location for the NWS api
       }
-      await fetch(weatherURL).then
+      const weatherForecasts = []
+      await fetch(weatherURL).then((response) => response.json()).then((jsonResponse) => 
+      {for(let i = 0; i < 14; i++){
+         weatherForecasts[i] = [jsonResponse.properties.periods[i].shortForecast, jsonResponse.properties.periods[i].isDaytime]
+      }}
+      )
+      var nextValidTime = 0;
+      for(let i = 0; i < 14; i++){
+         if(weatherForecasts[i][0] in validWeathers){
+            if(!weatherForecasts[i][1]){
+               nextValidTime = i;
+               break;
+            }
+         }
+      }
     }
     getLoc();
     getTLE();
