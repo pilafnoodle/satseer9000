@@ -18,7 +18,8 @@
     const url = "https://tle.ivanstanojevic.me/api/tle/49044";
     var loc;
     var weatherURL;
-    const validWeathers = ["Partly Cloudy", "Sunny"]
+    var nextValidTime;
+    const validWeathers = ["Partly Cloudy", "Clear", "Mostly Clear"]
     async function getTLE(){
         const result =await fetch(url);
         console.log("yippeeee");
@@ -34,12 +35,56 @@
     }
     async function getWeather(){
       try{
-         await fetch("https://api.weather.gov/points/" + loc).then((response) => response.json()).then((jsonResponse) => weather = jsonResponse.properties.forecast)
+         await fetch("https://api.weather.gov/points/" + loc).then((response) => response.json()).then((jsonResponse) => weatherURL = jsonResponse.properties.forecast)
+         
       }
       catch{
          //assumes that adding one to lat and long will make a valid location for the NWS api
+         try{
+            var oldLoc = loc;
+            while(weatherURL == null){
+               console.log("fixing");
+               nums = loc.split(",")
+               lat = parseFloat(nums[0]);
+               long = parseFloat(nums[1]);
+               lat ++;
+               long ++;
+               console.log(lat + "," + long);
+               await fetch("https://api.weather.gov/points/" + lat + "," + long).then((response) => response.json()).then((jsonResponse) => weatherURL = jsonResponse.properties.forecast);
+            }
+            loc = oldLoc;
+         }
+         catch{
+            console.log("oopsie");
+            loc = oldLoc;
+            await fetch("https://api.weather.gov/points/" + "33.9806,-102").then((response) => response.json()).then((jsonResponse) => weatherURL = jsonResponse.properties.forecast);
+         }
       }
-      await fetch(weatherURL).then
+      console.log(weatherURL)
+      const weatherForecasts = []
+      await fetch(weatherURL).then((response) => response.json()).then((jsonResponse) => 
+      {for(let i = 0; i < 14; i++){
+         weatherForecasts[i] = [jsonResponse.properties.periods[i].shortForecast, jsonResponse.properties.periods[i].isDaytime]
+      }}
+      )
+      nextValidTime = 0; //Next valid time is stored in ~12 hour increments, up to a week in the future. If next valid time is 0, the weather conditions are clear enough to see a satellite now
+      for(let i = 0; i < 14; i++){
+         if(validWeathers.includes(weatherForecasts[i][0])){
+            nextValidTime = i;
+            break;
+         }
+      }
+    }
+    function canISee(nvt, uLoc, sLoc){
+      if (nvt != 0){
+         return false
+      }
+      satRange = [[uLoc[0] - 90, uLoc[1] + 90], [uLoc[1] - 45, uLoc[1] + 45]];
+      if((satLoc[0] > satRange[0][0]) && (satLoc[0] < satRange[0][1]) && (satLoc[1] > satRange[1][0]) && (satLoc[1] < satrange[1][1]))
+      {
+         return true;
+      }
+      return false;
     }
     getLoc();
     getTLE();
