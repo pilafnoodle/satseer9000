@@ -20,6 +20,18 @@
 body {
     color: white;
     background-color: black;
+    display: flex;
+    overflow: hidden;
 }
 
+text{
+    display: inline;
+}
+
+#iss{
+    position:absolute;
+    height: 50px;
+    z-index: 10;
+
+}
  
