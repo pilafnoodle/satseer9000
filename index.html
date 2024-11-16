@@ -9,6 +9,7 @@
     const url = "https://tle.ivanstanojevic.me/api/tle/49044";
     var loc;
     var weatherURL;
+    var nextValidTime;
     const validWeathers = ["Partly Cloudy", "Sunny"]
     async function getTLE(){
         const result =await fetch(url);
@@ -36,7 +37,7 @@
          weatherForecasts[i] = [jsonResponse.properties.periods[i].shortForecast, jsonResponse.properties.periods[i].isDaytime]
       }}
       )
-      var nextValidTime = 0;
+      nextValidTime = 0; //Next valid time is stored in ~12 hour increments, up to a week in the future. If next valid time is 0, the weather conditions are clear enough to see a satellite now
       for(let i = 0; i < 14; i++){
          if(weatherForecasts[i][0] in validWeathers){
             if(!weatherForecasts[i][1]){
@@ -45,6 +46,17 @@
             }
          }
       }
+    }
+    function canISee(nvt, uLoc, sLoc){
+      if (nvt != 0){
+         return false
+      }
+      satRange = [[uLoc[0] - 90, uLoc[1] + 90], [uLoc[1] - 45, uLoc[1] + 45]];
+      if((satLoc[0] > satRange[0][0]) && (satLoc[0] < satRange[0][1]) && (satLoc[1] > satRange[1][0]) && (satLoc[1] < satrange[1][1]))
+      {
+         return true;
+      }
+      return false;
     }
     getLoc();
     getTLE();
