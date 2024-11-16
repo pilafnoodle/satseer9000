@@ -6,22 +6,15 @@
     <title>TLE Coordinates</title>
 </head>
 <body>
-    <div id="coordinates">
-        <p>Satellite Coordinates:</p>
-        <p>Longitude: <span id="sublong">-</span></p>
-        <p>Latitude: <span id="sublat">-</span></p>
-    </div>
+  <!-- Your content here -->
+  <div id="coordinates">
+    <p>Coordinates:</p>
+    <p>Longitude: <span id="sublong">-</span></p>
+    <p>Latitude: <span id="sublat">-</span></p>
+</div>
+  
+      <script src="script.js"></script>
 
-    <script>
-        function fetchTleData() {
-            fetch('/get_tle')
-                .then(data => { console.log('Fetched data:', data); })
-        }
-
-        // Call fetchTleData when the page is loaded
-        window.onload = fetchTleData();
-
-    </script>
-    
+  </body>
 </body>
 </html>
