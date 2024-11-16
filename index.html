@@ -6,14 +6,21 @@
   <!-- Your content here -->
   
   <script>
-    const url = "https://tle.ivanstanojevic.me/api/tle/49044";
-    
-    async function getTLE(){
-        const result =await fetch(url);
-        console.log("yippeeee");
-        result.json().then(json=>{console.log(json);})
-    }
-    getTLE();
+    // Fetch the data from the API
+fetch('http://api.open-notify.org/iss-now.json')
+    .then(response => response.json())  // Convert the response to JSON
+    .then(data => {
+        // Access and log the timestamp and latitude values
+        console.log('Timestamp:', data.timestamp);
+        console.log('Latitude:', data.iss_position.latitude);
+        console.log('Longitude:', data.iss_position.longitude);
+
+    })
+    .catch(error => {
+        // Handle any errors that occur during the fetch
+        console.error('Error fetching data:', error);
+    });
+
   </script>
 </body>
 </html>
