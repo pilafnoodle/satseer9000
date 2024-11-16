@@ -4,17 +4,62 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TLE Coordinates</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Link to the external CSS file -->
+
 </head>
 <body>
-  <!-- Your content here -->
 
   <div id="coordinates">
     <p>Coordinates:</p>
     <p>Longitude: <span id="sublong">-</span></p>
     <p>Latitude: <span id="sublat">-</span></p>
-</div>
+    </div>
+
+    <div id="caniseeit">
+        <h1>Can you see it?</h1>
+        <h2 id="icanseeit">yes</h2>
+    </div>
+
+    <div id="image-container">
+        <img id="background" src="" alt="Image" width="600">
+    </div>
+
+    <script>
+
+        earthImages = [
+        "earthimages/epic_1b_20241112003634.png",
+        "earthimages/epic_1b_20241112022436.png",
+        "earthimages/epic_1b_20241112041239.png",
+        "earthimages/epic_1b_20241112060041.png",
+        "earthimages/epic_1b_20241112074844.png",
+        "earthimages/epic_1b_20241112093646.png",
+        "earthimages/epic_1b_20241112112449.png",
+        "earthimages/epic_1b_20241112131252.png",
+        "earthimages/epic_1b_20241112150054.png",
+        "earthimages/epic_1b_20241112164856.png",
+        "earthimages/epic_1b_20241112183659.png",
+        "earthimages/epic_1b_20241112221304.jpg",
+        "earthimages/epic_1b_20241112221304.png"
+        ];
+
+        function earthSpin(){
+            console.log("y8ippeee");
+            let index=0;
+
+            setInterval(()=>{
+                index = (index + 1) % earthImages.length;
+                const image = document.getElementById('background');
+                image.src = earthImages[index];
+            },1000);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            earthSpin();
+        });    
+</script>
+
   
-  <script>
+  <!-- <script>
     const url = "https://tle.ivanstanojevic.me/api/tle/49044";
     var loc;
     var weatherURL;
@@ -43,10 +88,14 @@
     }
     getLoc();
     getTLE();
-    getWeather();
-  </script>
+    getWeather(); -->
+ 
+ 
+ </script>
       <script src="script.js"></script>
 
   </body>
+
+  
 </body>
 </html>
