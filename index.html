@@ -13,32 +13,34 @@
 <script>
     // Function to move the image randomly on the page
     var i = 0
+    xPos = 0;
+    yPos = 0;
+    const iss = document.getElementById('iss');
+    iss.classList.add('visible')
+
     function placeISS() {
-        const image = document.getElementById('iss');
-        image.classList.add('visible')
-
+        iss.style.zIndex = 10;
+        iss.style.visibility = "visible"
         if(i < 6){
-            image.style.visibility = "visible";
-        }
-        //left edge is -1200, right edge is -500
-        const xPos = (window.innerWidth - (1200 - (i*116.66)));  // Subtract image width
-        const yPos = (window.innerHeight - (350 + (125 * (i % 2)))); // Subtract image height
-        console.log(xPos);
-        if(i > 6){
-            image.style.visibility = "hidden";
-        }
-        setTimeout(() => {
-                image.classList.remove('visible');
-            }, 1000);
-        image.style.left = `${xPos}px`;
-        image.style.top = `${yPos}px`;
-        image.classList.add('visible');
+             xPos = (window.innerWidth - 850 +i*70);
+             //yPos = (window.innerHeight - 500 +i*25); 
+        }else if(i<10) {
+            xPos = (window.innerWidth - 850 +i*70);
+        }else{
+            iss.style.visibility = "hidden"
 
-        i ++;
-        i = i % 12;
+        }
+        yPos = window.innerHeight - 400 - (60 * Math.sin(i+0.5))
+        iss.style.left = `${xPos}px`;
+        iss.style.top = `${yPos}px`;
+
+        
+
+        i +=0.25;
+        i = i % 38;
     }
     // Move the image every 2 seconds (2000 milliseconds)
-    setInterval(placeISS, 3000);
+    setInterval(placeISS, 250);
 </script>
 
 
@@ -46,7 +48,7 @@
 
    <div id="text"> 
   <div id="coordinates">
-    <p>Coordinates:</p>
+    <p>ISS Coordinates:</p>
     <h3>Longitude: <span id="sublong">-</span></h3>
     <h3>Latitude: <span id="sublat">-</span></h3>
     </div>
@@ -84,10 +86,7 @@
         <p> <span id="cantsee">No</span></p>
      </div>
 
-     <h4>Next time to see: <span id="nexttimetosee">-</span></h4>
-
-
-
+     <h4>Next time to see:<br> <span id="nexttimetosee">-</span></h4>
 
 </div>
 

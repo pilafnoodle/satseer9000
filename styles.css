@@ -19,8 +19,28 @@ text{
     height: 50px;
     z-index: 10;
     transition: opacity 1.5s ease-in-out;
+    visibility: visible;
 }
  
 p {
    color: white;
+   font-family:'Courier New', Courier, monospace;
+}
+
+h1 {
+    color: white;
+    font-family:'Courier New', Courier, monospace;
+ }
+
+ h3 {
+    color: white;
+    font-family:'Courier New', Courier, monospace;
+ }
+
+ h4 {
+    color: white;
+    font-family:'Courier New', Courier, monospace;
+ }
+#cantsee{
+    display: none;
 }
