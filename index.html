@@ -8,24 +8,39 @@
 
 </head>
 
-<img id="iss" src="512px-ISS_spacecraft_model_1.png" alt="Moving Image">
+<img id="iss" src="512px-ISS_spacecraft_model_1.png" alt="Moving Image" class="visible">
 
 <script>
     // Function to move the image randomly on the page
+    var i = 0
+    xPos = 0;
+    yPos = 0;
+    const iss = document.getElementById('iss');
+    iss.classList.add('visible')
+
     function placeISS() {
-        const image = document.getElementById('iss');
+        iss.style.zIndex = 10;
+        iss.style.visibility = "visible"
+        if(i < 6){
+             xPos = (window.innerWidth - 850 +i*70);
+             //yPos = (window.innerHeight - 500 +i*25); 
+        }else if(i<10) {
+            xPos = (window.innerWidth - 850 +i*70);
+        }else{
+            iss.style.visibility = "hidden"
+
+        }
+        yPos = window.innerHeight - 400 - (60 * Math.sin(i+0.5))
+        iss.style.left = `${xPos}px`;
+        iss.style.top = `${yPos}px`;
+
         
-        // Randomly generate x and y positions for the image within the viewport
-        const xPos = (window.innerWidth - 500);  // Subtract image width
-        const yPos = (window.innerHeight - 500); // Subtract image height
 
-        // Set the image's position on the page
-        image.style.left = `${xPos}px`;
-        image.style.top = `${yPos}px`;
+        i +=0.25;
+        i = i % 38;
     }
-
     // Move the image every 2 seconds (2000 milliseconds)
-    setInterval(placeISS, 3000);
+    setInterval(placeISS, 250);
 </script>
 
 
@@ -33,11 +48,12 @@
 
    <div id="text"> 
   <div id="coordinates">
-    <p>Coordinates:</p>
-    <p>Longitude: <span id="sublong">-</span></p>
-    <p>Latitude: <span id="sublat">-</span></p>
+    <p>ISS Coordinates:</p>
+    <h3>Longitude: <span id="sublong">-</span></h3>
+    <h3>Latitude: <span id="sublat">-</span></h3>
     </div>
 
+ 
     <script>
         function getPos(){
             fetch('http://api.open-notify.org/iss-now.json')
@@ -64,6 +80,13 @@
         <h1>Can you see it?</h1>
         <h2 id="icanseeit">yes</h2>
     </div>
+
+    <div id="CanISee?">
+        <p> <span id="cansee">Yes</span></p>
+        <p> <span id="cantsee">No</span></p>
+     </div>
+
+     <h4>Next time to see:<br> <span id="nexttimetosee">-</span></h4>
 
 </div>
 
@@ -153,11 +176,8 @@
         });    
 </script>
 
-<div id="CanISee?">
-   <h2>Can I See it?</h2>
-   <p> <span id="cansee">Yes</span></p>
-   <p> <span id="cantsee">No</span></p>
-</div>
+  
+
 <script src="script.js"></script>
   <script>
     const url = "https://tle.ivanstanojevic.me/api/tle/49044";
@@ -219,9 +239,9 @@
     }
     
     function canISee(nvt, uLoc, sLoc){
-      if (nvt != 0){
-         return false
-      }
+    //   if (nvt != 0){
+    //      return false
+    //   }
       satRange = [[uLoc[1] - 90, uLoc[1] + 90], [uLoc[0] - 45, uLoc[0] + 45]];
       if((satLoc[1] > satRange[0][0]) && (satLoc[1] < satrange[0][1]))
       {
@@ -281,32 +301,74 @@
       }
       if(canISee(nextValidTime, uloc, satLoc)){
          console.log("hi");
+         //you can see it
          document.getElementById("cansee").style.display="inline";
          document.getElementById("cantsee").style.display="none";
       }
       else{
          console.log("hey");
+         //you cant see it
          document.getElementById("cantsee").style.display="inline"
          document.getElementById("cansee").style.display="none"
       }
    }
+
+
+
+    setsight();
+    
+
    async function whenToWatch(nvt, uLoc, sLoc){
       //183.2 is the distance the satellite drifts to the west every 12 hours. If NVT is < 12, then a different method needs to be applied
       console.log("NVT: " + nvt);
       console.log("sLoc[1]: " + sLoc[1])
-      sLoc[1] = ((((sLoc[1] - (nvt * 183.2) + 180) % 360) + 360) % 360) - 180;
+      if(nvt > 1){
+      sLoc[1] = ((((sLoc[1] - (nvt * 183.2) + 180) % 360) + 360) % 360) - 180;}
+      
       console.log("new sLoc[1]: " + sLoc[1])
       satRange = [[uLoc[1] - 90, uLoc[1] + 90], [uLoc[0] - 45, uLoc[0] + 45]];
       var i = 0;
-      while(!(sLoc[1] > satRange[0][0]) && (sLoc[1] < satRange[0][1]))
+      var q = 0
+      console.log(satRange[0][0])
+      console.log(satRange[0][1])
+      var k = sLoc[1];
+      var l = sLoc[1];
+      while((l < satRange[0][0]) || (l > satRange[0][1])){
+        console.log("q=" + q)
+         l -= -37.456;
+         if(l > 180){
+            l -= 360;
+         }
+         console.log("j new " + l)
+         q += 1;
+      }
+      while((k < satRange[0][0]) || (k > satRange[0][1]))
       {
-         sLoc[1] += 37.456
-         sLoc[1] = ((sLoc[1] + 180) % 360) - 180;
+        console.log("i=" + i)
+         
+         k -= 37.456;
+         if(k < -180){
+            k += 360
+         }
+         console.log("k new " + k)
          i ++;
       }
-      return Date.now() + (nvt * 12 * 60 * 60 * 1000) + (60 * 1000 * i)
+      if(nvt > 1){
+        return Date.now() + (nvt * 12 * 3600 * 1000) - (60 * 1000 * i)
+      }
+      return Date.now() + (60 * 1000 * q)
+      /*if(nvt > 1){
+      if(((sLoc[1] > satRange[0][0]) && (sLoc[1] < satRange[0][1]))){
+        return Date.now() + (nvt * 12 * 60 * 60 * 1000) + (60 * 1000 * q)}
+      return Date.now() + (nvt * 12 * 60 * 60 * 1000) - (60 * 1000 * i);}
+      else{
+        if(((sLoc[1] > satRange[0][0]) && (sLoc[1] < satRange[0][1]))){
+        return Date.now() + (60 * 1000 * q)}
+      return Date.now()  - (60 * 1000 * i);
+      }*/
    }
    setsight();
+   var cTime;
    async function testSight(){
       var loc = await getLoc();
       const uloc = loc.split(",");
@@ -353,12 +415,17 @@
             break;
          }
       }
-      var cTime = await whenToWatch(nextValidTime, uloc, satLoc);
+    cTime = await whenToWatch(nextValidTime, uloc, satLoc);
       console.log(cTime);
       console.log(new Date(cTime));
+      document.getElementById('nexttimetosee').innerHTML = new Date(cTime);
    }
    testSight();
+
+    //document.getElementById('nexttimetosee').innerHTML = ;
+
     </script>
+
   </body>
 
   
