@@ -4,13 +4,157 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TLE Coordinates</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Link to the external CSS file -->
+
 </head>
+
+<img id="iss" src="512px-ISS_spacecraft_model_1.png" alt="Moving Image">
+
+<script>
+    // Function to move the image randomly on the page
+    function placeISS() {
+        const image = document.getElementById('iss');
+        
+        // Randomly generate x and y positions for the image within the viewport
+        const xPos = (window.innerWidth - 500);  // Subtract image width
+        const yPos = (window.innerHeight - 500); // Subtract image height
+
+        // Set the image's position on the page
+        image.style.left = `${xPos}px`;
+        image.style.top = `${yPos}px`;
+    }
+
+    // Move the image every 2 seconds (2000 milliseconds)
+    setInterval(placeISS, 3000);
+</script>
+
+
 <body>
+
+   <div id="text"> 
   <div id="coordinates">
     <p>Coordinates:</p>
     <p>Longitude: <span id="sublong">-</span></p>
     <p>Latitude: <span id="sublat">-</span></p>
+    </div>
+
+    <script>
+        function getPos(){
+            fetch('http://api.open-notify.org/iss-now.json')
+            .then(response => response.json())  // Convert the response to JSON
+            .then(data => {
+                // Access and log the timestamp and latitude values
+                console.log('Timestamp:', data.timestamp);
+                console.log('Latitude:', data.iss_position.latitude);
+                console.log('Longitude:', data.iss_position.longitude);
+                document.getElementById('sublong').textContent = data.iss_position.longitude;
+                document.getElementById('sublat').textContent = data.iss_position.latitude;
+                
+            })
+            .catch(error => {
+                // Handle any errors that occur during the fetch
+                console.error('Error fetching data:', error);
+            });
+        }
+        setInterval(getPos,2000);
+
+    </script>
+
+    <div id="caniseeit">
+        <h1>Can you see it?</h1>
+        <h2 id="icanseeit">yes</h2>
+    </div>
+
 </div>
+
+    <div id="image-container">
+        <img id="earth1" src="" alt="Image" class="hidden" width="600">
+        <img id="earth2" src="" alt="Image" class="visible" width="600">
+    </div>
+    
+    <script>
+        // Array of image paths
+        const earthImages = [
+            "earthimages/epic_1b_20241112003634.png",
+            "earthimages/epic_1b_20241112022436.png",
+            "earthimages/epic_1b_20241112041239.png",
+            "earthimages/epic_1b_20241112060041.png",
+            "earthimages/epic_1b_20241112074844.png",
+            "earthimages/epic_1b_20241112093646.png",
+            "earthimages/epic_1b_20241112112449.png",
+            "earthimages/epic_1b_20241112131252.png",
+            "earthimages/epic_1b_20241112150054.png",
+            "earthimages/epic_1b_20241112164856.png",
+            "earthimages/epic_1b_20241112183659.png",
+            "earthimages/epic_1b_20241112221304.jpg",
+            "earthimages/epic_1b_20241112221304.png"
+        ];
+    
+        let currentImageIndex = 0; // Track the current image
+        const totalImages = earthImages.length;
+        const earth1 = document.getElementById('earth1');
+        const earth2 = document.getElementById('earth2');
+    
+        // Set the initial image
+        earth1.src = earthImages[currentImageIndex];
+    
+        // Function to handle the crossfade effect
+        function crossfadeImages() {
+            const nextImageIndex = (currentImageIndex + 1) % totalImages; // Get next image
+            const nextImageSrc = earthImages[nextImageIndex];
+            
+            // Swap the images
+            if (earth1.classList.contains('visible')) {
+                earth1.classList.remove('visible');
+                earth1.classList.add('hidden');
+                earth2.classList.remove('hidden');
+                earth2.classList.add('visible');
+                earth2.src = nextImageSrc;
+            } else {
+                earth2.classList.remove('visible');
+                earth2.classList.add('hidden');
+                earth1.classList.remove('hidden');
+                earth1.classList.add('visible');
+                earth1.src = nextImageSrc;
+            }
+    
+            currentImageIndex = nextImageIndex; // Update the index
+        }
+    
+        // Set interval for the crossfade every 3 seconds (3000ms)
+        setInterval(crossfadeImages, 3000);
+    </script>
+    
+    <style>
+        #image-container img {
+            position: absolute;
+            margin-top: 10px;
+            padding-left: 10%;
+            height: 100vh;
+            width: auto;
+            transition: opacity 1.5s ease-in-out;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    
+        .hidden {
+            opacity: 0;
+        }
+    
+        .visible {
+            opacity: 1;
+        }
+    </style>
+    <script>
+
+        document.addEventListener('DOMContentLoaded', function() {
+            crossfadeImages();
+            console.log("trying to spin");
+        });    
+</script>
+
+  
+  <!-- <script>
 <div id="CanISee?">
    <h2>Can I See it?</h2>
    <p> <span id="cansee">Yes</span></p>
@@ -218,5 +362,7 @@
    testSight();
     </script>
   </body>
+
+  
 </body>
 </html>

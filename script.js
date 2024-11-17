@@ -1,5 +1,6 @@
 var satLoc = [];
 fetch('http://api.open-notify.org/iss-now.json')
+
             .then(response => response.json())  // Convert the response to JSON
             .then(data => {
                 // Access and log the timestamp and latitude values
