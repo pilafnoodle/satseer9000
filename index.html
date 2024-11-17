@@ -35,7 +35,7 @@
         image.classList.add('visible');
 
         i ++;
-        i = i % 11;
+        i = i % 12;
     }
     // Move the image every 2 seconds (2000 milliseconds)
     setInterval(placeISS, 3000);
@@ -47,10 +47,11 @@
    <div id="text"> 
   <div id="coordinates">
     <p>Coordinates:</p>
-    <p>Longitude: <span id="sublong">-</span></p>
-    <p>Latitude: <span id="sublat">-</span></p>
+    <h3>Longitude: <span id="sublong">-</span></h3>
+    <h3>Latitude: <span id="sublat">-</span></h3>
     </div>
 
+ 
     <script>
         function getPos(){
             fetch('http://api.open-notify.org/iss-now.json')
@@ -77,6 +78,16 @@
         <h1>Can you see it?</h1>
         <h2 id="icanseeit">yes</h2>
     </div>
+
+    <div id="CanISee?">
+        <p> <span id="cansee">Yes</span></p>
+        <p> <span id="cantsee">No</span></p>
+     </div>
+
+     <h4>Next time to see: <span id="nexttimetosee">-</span></h4>
+
+
+
 
 </div>
 
@@ -167,11 +178,7 @@
 </script>
 
   
-<div id="CanISee?">
-   <h2>Can I See it?</h2>
-   <p> <span id="cansee">Yes</span></p>
-   <p> <span id="cantsee">No</span></p>
-</div>
+
 <script src="script.js"></script>
   <script>
     const url = "https://tle.ivanstanojevic.me/api/tle/49044";
@@ -233,9 +240,9 @@
     }
     
     function canISee(nvt, uLoc, sLoc){
-      if (nvt != 0){
-         return false
-      }
+    //   if (nvt != 0){
+    //      return false
+    //   }
       satRange = [[uLoc[1] - 90, uLoc[1] + 90], [uLoc[0] - 45, uLoc[0] + 45]];
       if((satLoc[1] > satRange[0][0]) && (satLoc[1] < satrange[0][1]))
       {
@@ -295,32 +302,74 @@
       }
       if(canISee(nextValidTime, uloc, satLoc)){
          console.log("hi");
+         //you can see it
          document.getElementById("cansee").style.display="inline";
          document.getElementById("cantsee").style.display="none";
       }
       else{
          console.log("hey");
+         //you cant see it
          document.getElementById("cantsee").style.display="inline"
          document.getElementById("cansee").style.display="none"
       }
    }
+
+
+
+    setsight();
+    
+
    async function whenToWatch(nvt, uLoc, sLoc){
       //183.2 is the distance the satellite drifts to the west every 12 hours. If NVT is < 12, then a different method needs to be applied
       console.log("NVT: " + nvt);
       console.log("sLoc[1]: " + sLoc[1])
-      sLoc[1] = ((((sLoc[1] - (nvt * 183.2) + 180) % 360) + 360) % 360) - 180;
+      if(nvt > 1){
+      sLoc[1] = ((((sLoc[1] - (nvt * 183.2) + 180) % 360) + 360) % 360) - 180;}
+      
       console.log("new sLoc[1]: " + sLoc[1])
       satRange = [[uLoc[1] - 90, uLoc[1] + 90], [uLoc[0] - 45, uLoc[0] + 45]];
       var i = 0;
-      while(!(sLoc[1] > satRange[0][0]) && (sLoc[1] < satRange[0][1]))
+      var q = 0
+      console.log(satRange[0][0])
+      console.log(satRange[0][1])
+      var k = sLoc[1];
+      var l = sLoc[1];
+      while((l < satRange[0][0]) || (l > satRange[0][1])){
+        console.log("q=" + q)
+         l -= -37.456;
+         if(l > 180){
+            l -= 360;
+         }
+         console.log("j new " + l)
+         q += 1;
+      }
+      while((k < satRange[0][0]) || (k > satRange[0][1]))
       {
-         sLoc[1] += 37.456
-         sLoc[1] = ((sLoc[1] + 180) % 360) - 180;
+        console.log("i=" + i)
+         
+         k -= 37.456;
+         if(k < -180){
+            k += 360
+         }
+         console.log("k new " + k)
          i ++;
       }
-      return Date.now() + (nvt * 12 * 60 * 60 * 1000) + (60 * 1000 * i)
+      if(nvt > 1){
+        return Date.now() + (nvt * 12 * 3600 * 1000) - (60 * 1000 * i)
+      }
+      return Date.now() + (60 * 1000 * q)
+      /*if(nvt > 1){
+      if(((sLoc[1] > satRange[0][0]) && (sLoc[1] < satRange[0][1]))){
+        return Date.now() + (nvt * 12 * 60 * 60 * 1000) + (60 * 1000 * q)}
+      return Date.now() + (nvt * 12 * 60 * 60 * 1000) - (60 * 1000 * i);}
+      else{
+        if(((sLoc[1] > satRange[0][0]) && (sLoc[1] < satRange[0][1]))){
+        return Date.now() + (60 * 1000 * q)}
+      return Date.now()  - (60 * 1000 * i);
+      }*/
    }
    setsight();
+   var cTime;
    async function testSight(){
       var loc = await getLoc();
       const uloc = loc.split(",");
@@ -367,12 +416,17 @@
             break;
          }
       }
-      var cTime = await whenToWatch(nextValidTime, uloc, satLoc);
+    cTime = await whenToWatch(nextValidTime, uloc, satLoc);
       console.log(cTime);
       console.log(new Date(cTime));
+      document.getElementById('nexttimetosee').innerHTML = new Date(cTime);
    }
    testSight();
+
+    //document.getElementById('nexttimetosee').innerHTML = ;
+
     </script>
+
   </body>
 
   
