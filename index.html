@@ -8,22 +8,35 @@
 
 </head>
 
-<img id="iss" src="512px-ISS_spacecraft_model_1.png" alt="Moving Image">
+<img id="iss" src="512px-ISS_spacecraft_model_1.png" alt="Moving Image" class="visible">
 
 <script>
     // Function to move the image randomly on the page
+    var i = 0
     function placeISS() {
         const image = document.getElementById('iss');
-        
-        // Randomly generate x and y positions for the image within the viewport
-        const xPos = (window.innerWidth - 500);  // Subtract image width
-        const yPos = (window.innerHeight - 500); // Subtract image height
+        image.classList.add('visible')
 
-        // Set the image's position on the page
+        if(i < 6){
+            image.style.visibility = "visible";
+        }
+        //left edge is -1200, right edge is -500
+        const xPos = (window.innerWidth - (1200 - (i*116.66)));  // Subtract image width
+        const yPos = (window.innerHeight - (350 + (125 * (i % 2)))); // Subtract image height
+        console.log(xPos);
+        if(i > 6){
+            image.style.visibility = "hidden";
+        }
+        setTimeout(() => {
+                image.classList.remove('visible');
+            }, 1000);
         image.style.left = `${xPos}px`;
         image.style.top = `${yPos}px`;
-    }
+        image.classList.add('visible');
 
+        i ++;
+        i = i % 11;
+    }
     // Move the image every 2 seconds (2000 milliseconds)
     setInterval(placeISS, 3000);
 </script>
@@ -183,7 +196,7 @@
     }
     getLoc();
     getTLE();
-    getWeather(); -->
+    getWeather(); 
  
  
  </script>
