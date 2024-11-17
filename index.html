@@ -21,7 +21,7 @@
     const url = "https://tle.ivanstanojevic.me/api/tle/49044";
     var loc;
     var weatherURL;
-    var nextValidTime;
+    var nextValidTime = 15;
     const validWeathers = ["Partly Cloudy", "Clear", "Mostly Clear"]
     async function getLoc(){
       await fetch("https://ipinfo.io/json?token=32edddcb4e3546").then(
@@ -65,32 +65,78 @@
          weatherForecasts[i] = [jsonResponse.properties.periods[i].shortForecast, jsonResponse.properties.periods[i].isDaytime]
       }}
       )
-      nextValidTime = 0; //Next valid time is stored in ~12 hour increments, up to a week in the future. If next valid time is 0, the weather conditions are clear enough to see a satellite now
+     //Next valid time is stored in ~12 hour increments, up to a week in the future. If next valid time is 0, the weather conditions are clear enough to see a satellite now
+      nextValidTime=0;
       for(let i = 0; i < 14; i++){
          if(validWeathers.includes(weatherForecasts[i][0])){
             nextValidTime = i;
             break;
          }
       }
+      return nextValidTime;
     }
+    
     function canISee(nvt, uLoc, sLoc){
       if (nvt != 0){
          return false
       }
-      satRange = [[uLoc[0] - 90, uLoc[1] + 90], [uLoc[1] - 45, uLoc[1] + 45]];
-      if((satLoc[0] > satRange[0][0]) && (satLoc[0] < satRange[0][1]) && (satLoc[1] > satRange[1][0]) && (satLoc[1] < satrange[1][1]))
+      satRange = [[uLoc[1] - 90, uLoc[1] + 90], [uLoc[0] - 45, uLoc[0] + 45]];
+      if((satLoc[1] > satRange[0][0]) && (satLoc[1] < satrange[0][1]))
       {
          return true;
       }
       return false;
     }
-    getWeather();
+
+
+  
+  // Call the function
+      getWeather();   
     async function setsight(){
       loc = await getLoc();
       const uloc = loc.split(",");
       uloc[0] = parseFloat(uloc[0]);
       uloc[1] = parseFloat(uloc[1]);
-      console.log("hi");
+      try{
+         await fetch("https://api.weather.gov/points/" + loc).then((response) => response.json()).then((jsonResponse) => weatherURL = jsonResponse.properties.forecast)
+         
+      }
+      catch{
+         //assumes that adding one to lat and long will make a valid location for the NWS api
+         try{
+            var oldLoc = loc;
+            while(weatherURL == null){
+               console.log("fixing");
+               nums = loc.split(",")
+               lat = parseFloat(nums[0]);
+               long = parseFloat(nums[1]);
+               lat ++;
+               long ++;
+               await fetch("https://api.weather.gov/points/" + lat + "," + long).then((response) => response.json()).then((jsonResponse) => weatherURL = jsonResponse.properties.forecast);
+            }
+            loc = oldLoc;
+         }
+         catch{
+            console.log("oopsie");
+            loc = oldLoc;
+            await fetch("https://api.weather.gov/points/" + "33.9806,-102").then((response) => response.json()).then((jsonResponse) => weatherURL = jsonResponse.properties.forecast);
+         }
+      }
+      console.log(weatherURL)
+      const weatherForecasts = []
+      await fetch(weatherURL).then((response) => response.json()).then((jsonResponse) => 
+      {for(let i = 0; i < 14; i++){
+         weatherForecasts[i] = [jsonResponse.properties.periods[i].shortForecast, jsonResponse.properties.periods[i].isDaytime]
+      }}
+      )
+     //Next valid time is stored in ~12 hour increments, up to a week in the future. If next valid time is 0, the weather conditions are clear enough to see a satellite now
+      nextValidTime=0;
+      for(let i = 0; i < 14; i++){
+         if(validWeathers.includes(weatherForecasts[i][0])){
+            nextValidTime = i;
+            break;
+         }
+      }
       if(canISee(nextValidTime, uloc, satLoc)){
          console.log("hi");
          document.getElementById("cansee").style.display="inline";
@@ -102,7 +148,74 @@
          document.getElementById("cansee").style.display="none"
       }
    }
+   async function whenToWatch(nvt, uLoc, sLoc){
+      //183.2 is the distance the satellite drifts to the west every 12 hours. If NVT is < 12, then a different method needs to be applied
+      console.log("NVT: " + nvt);
+      console.log("sLoc[1]: " + sLoc[1])
+      sLoc[1] = ((((sLoc[1] - (nvt * 183.2) + 180) % 360) + 360) % 360) - 180;
+      console.log("new sLoc[1]: " + sLoc[1])
+      satRange = [[uLoc[1] - 90, uLoc[1] + 90], [uLoc[0] - 45, uLoc[0] + 45]];
+      var i = 0;
+      while(!(sLoc[1] > satRange[0][0]) && (sLoc[1] < satRange[0][1]))
+      {
+         sLoc[1] += 37.456
+         sLoc[1] = ((sLoc[1] + 180) % 360) - 180;
+         i ++;
+      }
+      return Date.now() + (nvt * 12 * 60 * 60 * 1000) + (60 * 1000 * i)
+   }
    setsight();
+   async function testSight(){
+      var loc = await getLoc();
+      const uloc = loc.split(",");
+      uloc[0] = parseFloat(uloc[0]);
+      uloc[1] = parseFloat(uloc[1]);
+      console.log("SATLOC: " + satLoc);
+      try{
+         await fetch("https://api.weather.gov/points/" + loc).then((response) => response.json()).then((jsonResponse) => weatherURL = jsonResponse.properties.forecast)
+         
+      }
+      catch{
+         //assumes that adding one to lat and long will make a valid location for the NWS api
+         try{
+            var oldLoc = loc;
+            while(weatherURL == null){
+               console.log("fixing");
+               nums = loc.split(",")
+               lat = parseFloat(nums[0]);
+               long = parseFloat(nums[1]);
+               lat ++;
+               long ++;
+               await fetch("https://api.weather.gov/points/" + lat + "," + long).then((response) => response.json()).then((jsonResponse) => weatherURL = jsonResponse.properties.forecast);
+            }
+            loc = oldLoc;
+         }
+         catch{
+            console.log("oopsie");
+            loc = oldLoc;
+            await fetch("https://api.weather.gov/points/" + "33.9806,-102").then((response) => response.json()).then((jsonResponse) => weatherURL = jsonResponse.properties.forecast);
+         }
+      }
+      console.log(weatherURL)
+      const weatherForecasts = []
+      await fetch(weatherURL).then((response) => response.json()).then((jsonResponse) => 
+      {for(let i = 0; i < 14; i++){
+         weatherForecasts[i] = [jsonResponse.properties.periods[i].shortForecast, jsonResponse.properties.periods[i].isDaytime]
+      }}
+      )
+     //Next valid time is stored in ~12 hour increments, up to a week in the future. If next valid time is 0, the weather conditions are clear enough to see a satellite now
+      nextValidTime=0;
+      for(let i = 0; i < 14; i++){
+         if(validWeathers.includes(weatherForecasts[i][0])){
+            nextValidTime = i;
+            break;
+         }
+      }
+      var cTime = await whenToWatch(nextValidTime, uloc, satLoc);
+      console.log(cTime);
+      console.log(new Date(cTime));
+   }
+   testSight();
     </script>
   </body>
 </body>
